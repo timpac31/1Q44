@@ -22,16 +22,15 @@ const items = {
     items: [],
 
     update: function() {
-        if(everyFrame(300)) {
+        if(everyFrame(3000)) {
             this.items.push(new Item(100, 20, zigzagMoving, 'P'));
         }
-        if(everyFrame(400)) {
+        if(everyFrame(4000)) {
             this.items.push(new Item(100, 20, zigzagMoving, 'M'));
         }
         this.removeIfoutOfCanvasOrCollision();
         this.items.forEach(item => item.update());
     },
-
     removeIfoutOfCanvasOrCollision: function() {
         for(let i=0; i<this.items.length; i++) {
             const item = this.items[i];
@@ -43,6 +42,9 @@ const items = {
                 myAirplane.itemUpdate(item.type);
             }
         }
+    },
+    clear: function() {
+        this.items = [];
     }
 };
 
@@ -95,12 +97,14 @@ const enemy = {
 function gameStart() {
     gameController.listen();
     myAirplane = new MyPlane(210, 550, myAirplaneWidth, myAirplaneHeight);
+    initStage();
     gameArea.start();
 }
 
 function gameRestart() {        
     gameArea.clear();
     enemy.clear();
+    items.clear();
     gameStart();
 }
 
@@ -131,8 +135,8 @@ const gameArea = {
     stage: 1,
     start: function() {
         this.status = 'start';
-        this.canvas.width = 480;
-        this.canvas.height = 600;        
+        this.canvas.width = 550;
+        this.canvas.height = 700;        
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
         this.frameNo = 0;
@@ -154,18 +158,16 @@ const gameArea = {
     },
     clearStage: function() {
         this.stop();
-        enemy.clear();
-        setTimeout(function() {
-            if(this.stage < stage.length) {
-                this.displayMessage(`stage ${this.stage} clear`, 100, 250, 48);
-                this.displayMessage('Enter to next stage', 150, 280, 20);
-                this.stage += 1;    
-            } else {
-                this.displayMessage('Congratulations!! All Clear', 150, 280, 20);
-                this.displayMessage('Enter to Regame', 100, 250, 48);
-                this.stage = 1;
-            }
-        }, 2000);
+        enemy.clear();        
+        if(this.stage < stage.length) {
+            this.displayMessage(`stage ${this.stage} clear`, 100, 250, 48);
+            this.displayMessage('Enter to next stage', 150, 280, 20);
+            this.stage += 1;    
+        } else {
+            this.displayMessage('Congratulations!! All Clear', 150, 280, 20);
+            this.displayMessage('Enter to Regame', 100, 250, 48);
+            this.stage = 1;
+        }
     },
     clear: function() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -318,9 +320,9 @@ function leftDown(x, y) {
 
 function guidedMissile(x, y) {
     return new CircleMissile(x, y, 3, '#673ab7', piece => {
-        if(myAirplane.x + myAirplaneCenterX > piece.x) {
+        if(myAirplane.x > piece.x) {
             piece.x += 1;
-        } else if(myAirplane.x + myAirplaneCenterX < piece.x) {
+        } else if(myAirplane.x + myAirplaneWidth < piece.x) {
             piece.x -= 1;
         }
 
@@ -328,6 +330,12 @@ function guidedMissile(x, y) {
     }, 1);
 }
 
+function targeting(x, y) {
+    const direction = myAirplaneCenterX > x ? 1 : -1
+    return new CircleMissile(x, y, 3, 'red', piece => {        
+        piece.x += piece.speedX * direction;        
+    }, 4);
+}
 
 /*************************
  *   Util function
@@ -373,7 +381,7 @@ function checkMyPlaneCollisionWithItem() {
 }
 
 function everyFrame(n) {
-    return (gameArea.frameNo == 1 || (gameArea.frameNo / n) % 1 == 0);
+    return (gameArea.frameNo / n) % 1 == 0;
 }
 
 function calcDistance(rx, ry, cx, cy) {
