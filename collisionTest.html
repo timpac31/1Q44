@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style>
+        canvas { border: 1px solid #d3d3d3; background-color: #f1f1f1;}
+    </style>
+</head>
+<body onload="startGame()">
+
+    <div><button onclick="myGameArea.stop()">stop</button></div>
+
+<script>
+var myGamePiece;
+var missiles = [];
+var circle;
+
+function startGame() {
+    gameController.listen();
+    myGamePiece = new Piece(210, 550, 30, 30, 'blue');    
+    circle = new CirclePiece(210, 400, 20, 'red');    
+    myGameArea.start();    
+}
+
+var myGameArea = {
+    canvas: document.createElement("canvas"),
+    start: function() {
+        this.canvas.width = 480;
+        this.canvas.height = 600;
+        this.context = this.canvas.getContext("2d");
+        document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+        this.frameNo = 0;
+        this.interval = setInterval(updateGameArea, 20);
+    },
+    stop: function() {
+        clearInterval(this.interval);
+    },
+    clear: function() {
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+}
+
+var gameController = {
+    listen: function() {
+        window.addEventListener('keydown', function(e) {
+            gameController.keys = gameController.keys || [];
+            gameController.keys[e.keyCode] = true;
+        });
+        window.addEventListener('keyup', function(e) {
+            gameController.keys[e.keyCode] = false;
+        });
+    },
+
+    move: function() {
+        if(this.keys && this.keys[37]) {
+            myGamePiece.moveLeft();
+        }
+        if(this.keys && this.keys[39]) {
+            myGamePiece.moveRight();
+        }
+        if(this.keys && this.keys[38]) {
+            myGamePiece.moveUp();
+        }
+        if(this.keys && this.keys[40]) {
+            myGamePiece.moveDown();
+        }
+    }
+}
+
+function Piece(x, y, width, height, color, movingStrategy) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.speedX = 2;
+    this.speedY = 2;
+    this.movingStrategy = movingStrategy;
+
+    this.newPosition = function() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+    }
+
+    this.moveLeft = function() {
+        this.x -= this.speedX;
+    }
+    this.moveRight = function() {
+        this.x += this.speedX;
+    }
+    this.moveUp = function() {
+        this.y -= this.speedY;
+    }
+    this.moveDown = function() {
+        this.y += this.speedY;
+    }
+
+    this.update = function() {
+        if(movingStrategy) movingStrategy(this);
+        ctx = myGameArea.context;
+        ctx.fillStyle = color;
+        ctx.fillRect(this.x, this.y, this.width, this.height);
+    }    
+}
+
+function CirclePiece(x, y, radius, color) {    
+    this.x = x;
+    this.y = y;
+    this.radius = radius;
+    this.color = color;    
+    
+    this.draw = function() {
+        ctx = myGameArea.context;
+        ctx.beginPath();
+        ctx.fillStyle = this.color;
+        ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+        ctx.fill();
+    }
+}
+
+Piece.prototype.crashWith = function(other) {
+    var myLeft = this.x;
+    var myRight = this.x + this.width;
+    var myTop = this.y;
+    var myBottom = this.y + this.height;
+    var otherLeft = other.x;
+    var otherRight = other.x + other.width;
+    var otherTop = other.y;
+    var otherBottom = other.y + other.height;
+    
+    if(myLeft > otherRight || myRight < otherLeft || myTop > otherBottom || myBottom < otherTop) {
+        return false;
+    }
+    return true;
+}
+
+function updateGameArea() {    
+    myGameArea.clear();
+    gameController.move();
+    myGamePiece.update();
+    if(collisionCheck()) {
+        console.log('충돌');
+    }
+    circle.draw();
+}
+
+//사각형과 원 충돌 검증
+function collisionCheck() {
+    var rectLeft = myGamePiece.x;
+    var rectRight = myGamePiece.x + myGamePiece.width;
+    var rectTop = myGamePiece.y;
+    var rectBottom = myGamePiece.y + myGamePiece.height;
+    var radius = circle.radius;
+    var circleX = circle.x;
+    var circleY = circle.y;
+
+    if((rectLeft <= circleX && rectRight >= circleX) || (rectBottom >= circleY && rectTop <= circleY)) {
+        rectLeft -= radius;
+        rectRight += radius;
+        rectTop -= radius;
+        rectBottom += radius;
+
+        if(rectLeft <= circleX && rectRight >= circleX && rectBottom >= circleY && rectTop <= circleY) {
+            return true;
+        }
+    }
+
+    if(calcDistance(rectLeft, rectTop, circleX, circleY) <= radius) {
+        return true;
+    }
+    if(calcDistance(rectRight, rectTop, circleX, circleY) <= radius) {
+        return true;
+    }
+    if(calcDistance(rectLeft, rectBottom, circleX, circleY) <= radius) {
+        return true;
+    }
+    if(calcDistance(rectRight, rectBottom, circleX, circleY) <= radius) {
+        return true;
+    }
+
+    return false;
+}
+
+function calcDistance(rx, ry, cx, cy) {
+    return Math.sqrt(Math.pow(Math.abs(rx - cx), 2) + Math.pow(Math.abs(ry - cy), 2));
+}
+
+</script>
+</body>
+
+</html>
