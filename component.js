@@ -124,10 +124,38 @@ class MyPlane extends Piece {
         }
     }
 
-    isCrashWithCircle(other) {
-        const deviation = (Math.abs((this.x + this.width/2) - other.x) < 4) ? 3 : 5;    
-        const distance = calcDistance(this.x + this.width/2, this.y + this.height/2, other.x, other.y);
-        return distance <= this.width/2 - deviation + other.radius;
+    isCrashWithCircle(circle) {
+        const deviation = (Math.abs((this.x + this.width/2) - circle.x) < 4) ? 3 : 5;    
+        const distance = calcDistance(this.x + this.width/2, this.y + this.height/2, circle.x, circle.y);
+        return distance <= this.width/2 - deviation + circle.radius;
+    }
+
+    isCrashWithRect(rect) {
+        const deviation = 2;
+        let rectLeft = rect.x;
+        let rectRight = rect.x + rect.width;
+        let rectTop = rect.y;
+        let rectBottom = rect.y + rect.height;
+        let radius = this.width / 2;
+        let circleX = this.x + this.width / 2;
+        let circleY = this.y + this.height / 2;
+    
+        if((rectLeft <= circleX && rectRight >= circleX) || (rectBottom >= circleY && rectTop <= circleY)) {
+            rectLeft -= radius;
+            rectRight += radius;
+            rectTop -= radius;
+            rectBottom += radius;
+    
+            if(rectLeft <= circleX && rectRight >= circleX && rectBottom >= circleY && rectTop <= circleY) {
+                return true;
+            }
+        }
+    
+        if(calcDistance(rectLeft, rectTop, circleX, circleY) <= radius-deviation) return true;        
+        if(calcDistance(rectRight, rectTop, circleX, circleY) <= radius-deviation) return true;
+        if(calcDistance(rectLeft, rectBottom, circleX, circleY) <= radius-deviation) return true;
+        if(calcDistance(rectRight, rectBottom, circleX, circleY) <= radius-deviation) return true;
+        return false;
     }
 
     moveLeft() { this.x -= this.speedX; }

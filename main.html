@@ -96,12 +96,12 @@ const enemy = {
 
 function gameStart() {
     gameController.listen();
-    myAirplane = new MyPlane(210, 550, myAirplaneWidth, myAirplaneHeight);
+    myAirplane = new MyPlane(230, 650, myAirplaneWidth, myAirplaneHeight);
     initStage();
     gameArea.start();
 }
 
-function gameRestart() {        
+function gameRestart() {
     gameArea.clear();
     enemy.clear();
     items.clear();
@@ -118,7 +118,7 @@ function updateGameArea() {
     gameArea.clear();
     
     myAirplane.update();
-    if(checkMyPlaneCollisionWithMissile()) {
+    if(checkMyPlaneCollisionWithMissile() || checkMyPlaneCollisionWithEnemy()) {
         gameArea.gameOver();
     }
     
@@ -266,6 +266,16 @@ function directDown(piece) {
     piece.y += piece.speedY;
 }
 
+function leftDown(piece) {
+    piece.x -= piece.speedX;
+    piece.y += piece.speedY;    
+}
+
+function rightDown(piece) {
+    piece.x += piece.speedX;
+    piece.y += piece.speedY;
+}
+
 function parallelMoving(piece) {
     const rightWall = gameArea.canvas.width - piece.width;
     if(piece.x > rightWall) {
@@ -331,7 +341,7 @@ function guidedMissile(x, y) {
 }
 
 function targeting(x, y) {
-    const direction = myAirplaneCenterX > x ? 1 : -1
+    const direction = myAirplane.x + myAirplaneCenterX > x ? 1 : -1
     return new CircleMissile(x, y, 3, 'red', piece => {        
         piece.x += piece.speedX * direction;        
     }, 4);
@@ -365,6 +375,15 @@ function checkCircleCrash(obj, other) {
 function checkMyPlaneCollisionWithMissile() {
     for(let i=0; i<enemy.missiles.length; i++) {
         if(myAirplane.isCrashWithCircle(enemy.missiles[i])) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function checkMyPlaneCollisionWithEnemy() {
+    for(let i=0; i<enemy.planes.length; i++) {
+        if(myAirplane.isCrashWithRect(enemy.planes[i])) {
             return true;
         }
     }
