@@ -116,6 +116,7 @@ function gameContinue() {
 function updateGameArea() {
     gameArea.frameNo += 1;
     gameArea.clear();
+    gameArea.backgroundImg.update();
     
     myAirplane.update();
     if(checkMyPlaneCollisionWithMissile() || checkMyPlaneCollisionWithEnemy()) {
@@ -131,6 +132,7 @@ function updateGameArea() {
 
 const gameArea = {
     canvas: document.createElement("canvas"),
+    backgroundImg: new Background(0, 0, 550, 700, "./img/sky_back.png"),
     status: 'ready',
     stage: 1,
     start: function() {
@@ -174,7 +176,7 @@ const gameArea = {
     },
     loopStart: function() {
         this.interval = setInterval(updateGameArea, interval_frame);
-    },
+    },    
     displayMessage: function(msg, x, y, fontSize) {
         this.context.fillStyle = "#ffffff";
         this.context.strokeStyle = "#ff0000";
@@ -266,13 +268,13 @@ function directDown(piece) {
     piece.y += piece.speedY;
 }
 
-function leftDown(piece) {
-    piece.x -= piece.speedX;
-    piece.y += piece.speedY;    
+function diagonalRightDown(piece) {
+    piece.x += piece.speedX;
+    piece.y += piece.speedY;
 }
 
-function rightDown(piece) {
-    piece.x += piece.speedX;
+function diagonalLeftDown(piece) {
+    piece.x -= piece.speedX;
     piece.y += piece.speedY;
 }
 
@@ -307,11 +309,18 @@ function downAndUp(piece) {
 function basicEnemyMissile(x, y) {
     return new CircleMissile(x, y, 3, 'red', directDown, 4);
 }
+function fastMissile(x, y) {
+    return new CircleMissile(x, y, 3, 'red', directDown, 6);
+}
 function basicRight(x, y) {
     return basicEnemyMissile(x + 10, y);
 }
 function basicLeft(x, y) {
     return basicEnemyMissile(x - 10, y);
+}
+
+function bombMissile(x, y) {
+    return new CircleMissile(x, y, 6, '#702000', directDown, 3)
 }
 
 function rightDown(x, y) {
@@ -343,7 +352,8 @@ function guidedMissile(x, y) {
 function targeting(x, y) {
     const direction = myAirplane.x + myAirplaneCenterX > x ? 1 : -1
     return new CircleMissile(x, y, 3, 'red', piece => {        
-        piece.x += piece.speedX * direction;        
+        piece.x += piece.speedX * direction;
+        piece.y += piece.speedY;    
     }, 4);
 }
 
@@ -354,6 +364,8 @@ function createEnemyWith(x, y, unit) {
     return new EnemyPlane(x, y, unit.width, unit.height, unit.color, unit.type,
                     unit.moving, unit.missile, unit.hp, unit.attackInterval, unit.speed);
 }
+
+
 
 function checkBoundaryCrash(obj, other) {
     const objLeft = obj.x;

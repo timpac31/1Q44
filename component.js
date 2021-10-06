@@ -58,6 +58,25 @@ class CirclePiece {
     }
 }
 
+class Background extends Piece {
+    constructor(x, y, width, height, src) {
+        super(x, y, width, height, '#fff', null);        
+        super.speedY = 2.5;
+        this.image = new Image();
+        this.image.src = src;
+    }
+
+    update() {
+        this.y += this.speedY;
+        if (this.y > this.height) {
+            this.y = 1;
+        }
+        const ctx = gameArea.context;
+        ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+        ctx.drawImage(this.image,  this.x, this.y - this.height, this.width, this.height);
+    }    
+}
+
 class MyPlane extends Piece {
     constructor(x, y, width, height) {
         super(x, y, width, height, '#fff', null);        
@@ -68,7 +87,7 @@ class MyPlane extends Piece {
         this.missilePower = 10;
         this.missileFactory = () => { return [new BasicMissile(this.x + this.width/2, this.y)]; };
         this.img = new Image();
-        this.img.src = "spaceship.png";
+        this.img.src = "./img/spaceship.png";
     }
 
     update() {
@@ -151,7 +170,7 @@ class MyPlane extends Piece {
             }
         }
     
-        if(calcDistance(rectLeft, rectTop, circleX, circleY) <= radius-deviation) return true;        
+        if(calcDistance(rectLeft, rectTop, circleX, circleY) <= radius-deviation-2) return true;
         if(calcDistance(rectRight, rectTop, circleX, circleY) <= radius-deviation) return true;
         if(calcDistance(rectLeft, rectBottom, circleX, circleY) <= radius-deviation) return true;
         if(calcDistance(rectRight, rectBottom, circleX, circleY) <= radius-deviation) return true;
