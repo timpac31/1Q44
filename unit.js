@@ -2,53 +2,100 @@
  *   character unit
 **************************/
 const unit = {
-    normalKeys : ['P1', 'P2', 'D1', 'D2', 'D3', 'D4', 'Z1', 'T1', 'T2', 'M1', 'M2', 'G1', 'G2'],
-    P1 : { width: 30, height: 20, color: 'red', type: 'normal', moving: parallelMoving, missile: [basicEnemyMissile], hp: 30, attackInterval: 100, speed: 3 },
-    P2 : { width: 30, height: 30, color: 'red', type: 'normal', moving: parallelMoving, missile: [leftDown, basicEnemyMissile, rightDown], hp: 30, attackInterval: 100, speed: 2 },
-    D1 : { width: 30, height: 20, color: 'red', type: 'normal', moving: directDown, missile: [basicEnemyMissile], hp: 20, attackInterval: 100, speed: 2 },
-    D2 : { width: 30, height: 20, color: 'red', type: 'normal', moving: downAndUp, missile: [basicEnemyMissile], hp: 20, attackInterval: 70, speed: 2 },
-    D3 : { width: 30, height: 20, color: 'red', type: 'normal', moving: diagonalRightDown, missile: [basicEnemyMissile], hp: 30, attackInterval: 70, speed: 2 },
-    D4 : { width: 30, height: 20, color: 'red', type: 'normal', moving: diagonalLeftDown, missile: [basicEnemyMissile], hp: 30, attackInterval: 70, speed: 2 },
-    Z1 : { width: 30, height: 20, color: 'red', type: 'normal', moving: zigzagMoving, missile: [basicEnemyMissile], hp: 10, attackInterval: 50, speed: 1 },
-    T1 : { width: 30, height: 30, color: '#673ab7', type: 'normal', moving: null, missile: [guidedMissile], hp:30, attackInterval:100, speed: 0 },
-    T2 : { width: 30, height: 20, color: 'red', type: 'normal', moving: parallelMoving, missile: [targeting], hp:30, attackInterval:80, speed: 3 },
-    M1 : { width: 30, height: 20, color: 'red', type: 'normal', moving: downAndUp, missile: [basicLeft, basicEnemyMissile, basicRight], hp:30, attackInterval:100, speed: 3 },
-    M2 : { width: 30, height: 20, color: 'red', type: 'normal', moving: parallelMoving, missile: [basicLeft, basicEnemyMissile, basicRight], hp:30, attackInterval:100, speed: 3 },
-    G1 : { width: 30, height: 20, color: 'red', type: 'normal', moving: null, missile: [bombMissile], hp:90, attackInterval:100, speed: 0 },
-    G2 : { width: 30, height: 20, color: 'red', type: 'normal', moving: null, missile: [bombMissile], hp:90, attackInterval:100, speed: 0 },
+    normalKeys : ['P1', 'P2', 'D1', 'D2', 'D3', 'D4','F1', 'F2', 'Z1', 'T1', 'T2', 'M1', 'M2', 'G1', 'G2'],
+    P1 : { 
+        width: 40, height: 45, type: 'normal', moving: parallelMoving, missile: [basicEnemyMissile], 
+        imgSrc: './img/P1.png', hp: 50, attackInterval: 100, speed: 3
+    },
+    P2 : { 
+        width: 40, height: 45, type: 'normal', moving: parallelMoving, missile: [leftDown, basicEnemyMissile, rightDown],
+        imgSrc: './img/P1.png', hp: 50, attackInterval: 100, speed: 2 
+    },
+    D1 : { 
+        width: 40, height: 38, type: 'normal', moving: directDown, missile: [basicEnemyMissile],
+        imgSrc: './img/D1.png', hp: 30, attackInterval: 100, speed: 2 
+    },
+    D2 : { 
+        width: 40, height: 38, type: 'normal', moving: downAndUp, missile: [basicEnemyMissile],
+        imgSrc: './img/D1.png', hp: 30, attackInterval: 70, speed: 2 
+    },
+    D3 : { 
+        width: 40, height: 38, type: 'normal', moving: diagonalRightDown, missile: [basicEnemyMissile],
+        imgSrc: './img/D1.png', hp: 30, attackInterval: 70, speed: 2 
+    },
+    D4 : { 
+        width: 40, height: 38, type: 'normal', moving: diagonalLeftDown, missile: [basicEnemyMissile],
+        imgSrc: './img/D1.png', hp: 30, attackInterval: 70, speed: 2 
+    },
+    F1 : { 
+        width: 38, height: 40, type: 'normal', moving: null, missile: [fastMissile],
+        imgSrc: './img/F1.png', hp: 60, attackInterval: 70, speed: 0 
+    },
+    F2 : { 
+        width: 38, height: 40, type: 'normal', moving: parallelMoving, missile: [fastMissile],
+        imgSrc: './img/F1.png', hp: 60, attackInterval: 70, speed: 3 
+    },
+    Z1 : { 
+        width: 40, height: 45, type: 'normal', moving: zigzagMoving, missile: [basicEnemyMissile],
+        imgSrc: './img/P1.png', hp: 20, attackInterval: 50, speed: 1 
+    },
+    T1 : { 
+        width: 40, height: 38, color: '#673ab7', type: 'normal', moving: null, missile: [guidedMissile],
+        imgSrc: './img/T1.png', hp:40, attackInterval:100, speed: 0 
+    },
+    T2 : { 
+        width: 40, height: 38, type: 'normal', moving: parallelMoving, missile: [targeting],
+        imgSrc: './img/T1.png', hp:40, attackInterval:80, speed: 3 
+    },
+    M1 : { 
+        width: 40, height: 49, type: 'normal', moving: downAndUp, missile: [basicLeft, basicEnemyMissile, basicRight],
+        imgSrc: './img/M1.png', hp:50, attackInterval:100, speed: 3 
+    },
+    M2 : { 
+        width: 40, height: 49, type: 'normal', moving: parallelMoving, missile: [basicLeft, basicEnemyMissile, basicRight],
+        imgSrc: './img/M1.png', hp:50, attackInterval:100, speed: 3 
+    },
+    G1 : { 
+        width: 40, height: 44, type: 'normal', moving: null, missile: [bombMissile],
+        imgSrc: './img/G1.png', hp:90, attackInterval:100, speed: 0 
+    },
+    G2 : { 
+        width: 40, height: 4, type: 'normal', moving: null, missile: [bombMissile],
+        imgSrc: './img/G1.png', hp:90, attackInterval:100, speed: 0 
+    },
     
     LITTLEP : {
         width: 250, height: 100, color: 'black', type: 'king', 
         moving: parallelMoving, missile: [leftDown, basicEnemyMissile, rightDown],
-        hp: 5000, attackInterval: 20, speed: 4
+        imgSrc: './img/F1.png', hp: 5000, attackInterval: 20, speed: 4
     },
     LITTLEP_sub : {
         width: 30, height: 30, color: 'black', type: 'normal', 
         moving: parallelMoving, missile: [basicEnemyMissile],
-        hp: 300, attackInterval: 50, speed: 5
+        imgSrc: './img/F1.png', hp: 300, attackInterval: 50, speed: 5
     },
     
     VVS : { 
         width: 300, height:120, color: 'black', type: 'king',
         moving: parallelMoving, 
         missile: [leftDown, basicEnemyMissile, rightDown], 
-        hp: 7000, attackInterval:30, speed: 3
+        imgSrc: './img/D1.png', hp: 7000, attackInterval:30, speed: 3
     },
     VVS_ARM : {
         width: 100, height:50, color: 'gray', type: 'normal',
         moving: parallelMoving, missile: [basicLeft, basicEnemyMissile, basicRight],
-        hp: 500, attackInterval:80, speed: 3
+        imgSrc: './img/D1.png', hp: 500, attackInterval:80, speed: 3
     },
     VVS_SC : {
         width: 50, height:50, color: 'blue', type: 'normal',
         moving: null, missile: [guidedMissile], 
-        hp: 300, attackInterval: 100, speed: 0
+        imgSrc: './img/D1.png', hp: 300, attackInterval: 100, speed: 0
     },
 
     DOUBLE_DRAGON : {
         width: 150, height: 80, color: 'black', type: 'king', 
         moving: parallelMoving, missile: [leftDown, basicEnemyMissile, rightDown, fastMissile],
-        hp: 5000, attackInterval: 40, speed: 7
+        imgSrc: './img/T1.png', hp: 5000, attackInterval: 40, speed: 7
     },
 
     getRandomUnit: function() {

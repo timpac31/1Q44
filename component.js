@@ -80,8 +80,8 @@ class Background extends Piece {
 class MyPlane extends Piece {
     constructor(x, y, width, height) {
         super(x, y, width, height, '#fff', null);        
-        this.speedX = 4;
-        this.speedY = 4;
+        this.speedX = 5;
+        this.speedY = 5;
         this.missiles = [];
         this.missileSize = 1;
         this.missilePower = 10;
@@ -121,32 +121,30 @@ class MyPlane extends Piece {
     itemUpdate(type) {
         if(type === 'M' && this.missileSize < 3) {
             this.missileSize += 1;
-        }else if(type === 'P' && this.missilePower < 30) {
-            this.missilePower += 10;
+        }else if(type === 'P' && this.missilePower < 20) {
+            this.missilePower += 5;
         }
-
-        if(this.missileSize == 2) {
+        
+        if(this.missileSize == 1) {
+            this.missileFactory = () => {
+                return [new Missile(this.x + this.width/2 + 10, this.y, 2, 7, 'blue', directUp, this.missilePower, 7)];
+            };
+        }else if(this.missileSize == 2) {
             this.missileFactory = () => {
                 return [
-                    new Missile(this.x + this.width/2 - 10, this.y, 4+this.missilePower/10, 7, 'blue', directUp, this.missilePower, 7),
-                    new Missile(this.x + this.width/2 + 10, this.y, 4+this.missilePower/10, 7, 'blue', directUp, this.missilePower, 7),
+                    new Missile(this.x + this.width/2 - 10, this.y, 5, 7, 'blue', directUp, this.missilePower, 7),
+                    new Missile(this.x + this.width/2 + 10, this.y, 5, 7, 'blue', directUp, this.missilePower, 7),
                 ];
             };
         }else if(this.missileSize == 3) {
             this.missileFactory = () => {
                 return [
-                    new Missile(this.x + this.width/2 - 10, this.y, 4+this.missilePower/10, 7, 'blue', leftUp, this.missilePower, 7),
-                    new Missile(this.x + this.width/2, this.y, 4+this.missilePower/10, 7, 'blue', directUp, this.missilePower, 7),
-                    new Missile(this.x + this.width/2 + 10, this.y, 4+this.missilePower/10, 7, 'blue', rightUp, this.missilePower, 7),
+                    new Missile(this.x + this.width/2 - 10, this.y, 8, 7, 'blue', leftUp, this.missilePower, 7),
+                    new Missile(this.x + this.width/2, this.y, 8, 7, 'blue', directUp, this.missilePower, 7),
+                    new Missile(this.x + this.width/2 + 10, this.y, 8, 7, 'blue', rightUp, this.missilePower, 7),
                 ];
             };
         }
-    }
-
-    isCrashWithCircle(circle) {
-        const deviation = (Math.abs((this.x + this.width/2) - circle.x) < 4) ? 3 : 5;    
-        const distance = calcDistance(this.x + this.width/2, this.y + this.height/2, circle.x, circle.y);
-        return distance <= this.width/2 - deviation + circle.radius;
     }
 
     isCrashWithRect(rect) {
@@ -177,6 +175,12 @@ class MyPlane extends Piece {
         return false;
     }
 
+    isCrashWithCircle(other) {
+        const deviation = (Math.abs((this.x + this.width/2) - other.x) < 4) ? 3 : 5;    
+        const distance = calcDistance(this.x + this.width/2, this.y + this.height/2, other.x, other.y);
+        return distance <= this.width/2 - deviation + other.radius;
+    }
+
     moveLeft() { this.x -= this.speedX; }
     moveRight() { this.x += this.speedX; }
     moveUp() { this.y -= this.speedY; }
@@ -184,14 +188,16 @@ class MyPlane extends Piece {
 }
 
 class EnemyPlane extends Piece {
-    constructor(x, y, width, height, color, type, movingStrategy, missileStrategies, hp, attackInterval=50, speed=4) {
-        super(x, y, width, height, color, movingStrategy);
+    constructor(x, y, width, height, type, movingStrategy, missileStrategies, imgSrc, hp, attackInterval=50, speed=4) {
+        super(x, y, width, height, '#fff', movingStrategy);
         super.speedX = speed;
         super.speedY = speed;
         this.type = type;
         this.missileStrategies = missileStrategies;
         this.hp = hp;
         this.attackInterval = attackInterval;
+        this.img = new Image();
+        this.img.src = imgSrc;
     }
 
     attack() {
@@ -210,15 +216,20 @@ class EnemyPlane extends Piece {
 
     destroy() {
         if(this.type === 'king') {
-            gameArea.clearStage();
+            setTimeout(() => gameArea.clearStage(), 2000);
         } 
 
         explosions.push(new Explosion(this.x, this.y));
     }
 
+    draw() {
+        const ctx = gameArea.context;
+        ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+    }
+
     update() {
         if(this.movingStrategy) this.movingStrategy(this);       
-        super.draw();
+        this.draw();
         if(everyFrame(this.attackInterval)) {
             this.attack();
         }
@@ -246,7 +257,7 @@ class CircleMissile extends CirclePiece {
 
 class BasicMissile extends Missile {
     constructor(x, y) {
-        super(x, y, 5, 7, 'blue', directUp, 10, 7);
+        super(x, y, 2, 7, 'blue', directUp, 10, 7);
     }
 }
 

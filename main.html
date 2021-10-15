@@ -22,10 +22,10 @@ const items = {
     items: [],
 
     update: function() {
-        if(everyFrame(3000)) {
+        if(everyFrame(2500) && myAirplane.missilePower < 20) {
             this.items.push(new Item(100, 20, zigzagMoving, 'P'));
         }
-        if(everyFrame(4000)) {
+        if(everyFrame(3000) && myAirplane.missileSize < 3) {
             this.items.push(new Item(100, 20, zigzagMoving, 'M'));
         }
         this.removeIfoutOfCanvasOrCollision();
@@ -71,7 +71,7 @@ const enemy = {
                 const myMissile = myAirplane.missiles[j];
                 
                 if(checkBoundaryCrash(myMissile, plane)) {
-                    plane.takeDamage(myMissile.power);
+                    plane.takeDamage(myAirplane.missilePower);
                     if(plane.hp <= 0) {
                         plane.destroy();
                         this.planes.splice(i, 1);
@@ -105,7 +105,18 @@ function gameRestart() {
     gameArea.clear();
     enemy.clear();
     items.clear();
-    gameStart();
+    myAirplane = new MyPlane(230, 650, myAirplaneWidth, myAirplaneHeight);
+    initStage();
+    gameArea.stage = 1;
+    gameArea.start();
+}
+
+function nextStage() {
+    gameArea.clear();
+    enemy.clear();
+    items.clear();
+    gameArea.stage += 1;
+    gameArea.start();
 }
 
 function gameContinue() {
@@ -152,23 +163,30 @@ const gameArea = {
         this.status = 'start';
         this.loopStart();
     },
+    pause: function() {
+        if(this.status === 'start') {
+            this.stop();
+        }else if(this.status === 'stop') {
+            this.continue();
+        }
+    },
     gameOver: function() {
-        this.status = 'gameOver';
         this.stop();
-        this.displayMessage('Game Over', 100, 250, 48);
-        this.displayMessage('Enter to restart', 150, 280, 20);
+        this.status = 'gameOver';        
+        this.displayMessage('Game Over', 160, 250, 48);
+        this.displayMessage('Enter to restart', 200, 280, 20);
     },
     clearStage: function() {
         this.stop();
-        enemy.clear();        
+        enemy.clear();
         if(this.stage < stage.length) {
+            this.status = 'clearStage';
             this.displayMessage(`stage ${this.stage} clear`, 100, 250, 48);
             this.displayMessage('Enter to next stage', 150, 280, 20);
-            this.stage += 1;    
         } else {
-            this.displayMessage('Congratulations!! All Clear', 150, 280, 20);
-            this.displayMessage('Enter to Regame', 100, 250, 48);
-            this.stage = 1;
+            this.status = 'gameOver';
+            this.displayMessage('Congratulations!! All Clear', 50, 250, 40);
+            this.displayMessage('Enter to Regame', 150, 280, 20);
         }
     },
     clear: function() {
@@ -197,8 +215,16 @@ const gameController = {
             gameController.shotKey = e.keyCode;
             setTimeout(() => gameController.shotKey = false, 20);
 
-            if(e.keyCode == 13 && gameArea.status !== 'start') {
-                gameRestart();
+            if(e.keyCode == 13) {
+                if(gameArea.status === 'ready' || gameArea.status === 'gameOver') {
+                    gameRestart();
+                } else if(gameArea.status === 'clearStage') {
+                    nextStage();
+                }
+            }
+
+            if(e.keyCode == 32) {
+                gameArea.pause();
             }
         });
     },
@@ -222,15 +248,9 @@ const gameController = {
     }
 }
 
-function addEnemy() {
-    //enemy.planes.push(new EnemyPlane(210, 50, 20, 20, 'red', directDown, basicEnemyMissile, 20));
-    //enemy.planes.push(new EnemyPlane(300, 50, 30, 20, 'red', parallelMoving, basicEnemyMissile, 30));
-    //enemy.planes.push(new EnemyPlane(10, 50, 30, 20, 'red', zigzagMoving, basicEnemyMissile, 20));
-    
-    //enemy.planes.push(createEnemyWith(210, 50, P1));
-    
+function addEnemy() {    
     if(stage[gameArea.stage-1][gameArea.frameNo]) {
-        enemy.planes.push(stage1[gameArea.frameNo]);
+        enemy.planes.push(stage[gameArea.stage-1][gameArea.frameNo]);
     }
 }
 
@@ -307,7 +327,7 @@ function downAndUp(piece) {
  *    Missile strategy
 **************************/
 function basicEnemyMissile(x, y) {
-    return new CircleMissile(x, y, 3, 'red', directDown, 4);
+    return new CircleMissile(x, y, 3, 'red', directDown, 5);
 }
 function fastMissile(x, y) {
     return new CircleMissile(x, y, 3, 'red', directDown, 6);
@@ -320,7 +340,7 @@ function basicLeft(x, y) {
 }
 
 function bombMissile(x, y) {
-    return new CircleMissile(x, y, 6, '#702000', directDown, 3)
+    return new CircleMissile(x, y, 6, '#dd7000', directDown, 4)
 }
 
 function rightDown(x, y) {
@@ -361,8 +381,8 @@ function targeting(x, y) {
  *   Util function
 **************************/
 function createEnemyWith(x, y, unit) {
-    return new EnemyPlane(x, y, unit.width, unit.height, unit.color, unit.type,
-                    unit.moving, unit.missile, unit.hp, unit.attackInterval, unit.speed);
+    return new EnemyPlane(x, y, unit.width, unit.height, unit.type,
+                    unit.moving, unit.missile, unit.imgSrc, unit.hp, unit.attackInterval, unit.speed);
 }
 
 
