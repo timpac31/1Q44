@@ -1,0 +1,15 @@
+
+canvas { border: 1px solid #d3d3d3; background-color: #d8d8d8; }
+#selectEl { position: fixed; width:500px; height:360px; top:200px; left:100px; background-color:#eef2f5; border: 1px solid #ccc; }
+#selectEl .selectable-wrap { padding-left: 10px; }
+#selectEl .selectable { 
+    border: 1px solid #ccc; width:32%; height:200px; float:left; cursor: pointer;
+    background-image: url('./img/P1.png'); background-position: 55px 40px; background-repeat: no-repeat;
+}
+#selectEl .selectable:hover { border: 1px solid #5e58f3; }
+#selectEl .selectable > p { position: relative; top:110px; left:10px; }
+#selectEl .selected { background-color: #b4b1ee; }
+button#gamestartBtn {padding: 15px 80px; background-color: #7b76f1; color: #fff; font-size: 20px; border: 1px solid #5e58f3; border-radius: 8px; cursor: pointer; margin-top: 10px;}
+
+p.note { color: #555; font-size: 18pt; }
+.center { text-align: center;}

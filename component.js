@@ -78,21 +78,22 @@ class Background extends Piece {
 }
 
 class MyPlane extends Piece {
-    constructor(x, y, width, height) {
+    constructor(x, y, width, height, speed, missilePower, imgSrc) {
         super(x, y, width, height, '#fff', null);        
-        this.speedX = 5;
-        this.speedY = 5;
+        this.speedX = speed;
+        this.speedY = speed;
         this.missiles = [];
         this.missileSize = 1;
-        this.missilePower = 10;
+        this.missilePower = missilePower;
+        this.missilePowerCount = 1;
         this.missileFactory = () => { return [new BasicMissile(this.x + this.width/2, this.y)]; };
         this.img = new Image();
-        this.img.src = "./img/spaceship.png";
+        this.img.src = imgSrc;
     }
 
     update() {
         gameController.action();
-        this.draw();
+        this.draw();        
     }
 
     draw() {
@@ -121,8 +122,9 @@ class MyPlane extends Piece {
     itemUpdate(type) {
         if(type === 'M' && this.missileSize < 3) {
             this.missileSize += 1;
-        }else if(type === 'P' && this.missilePower < 20) {
-            this.missilePower += 5;
+        }else if(type === 'P' && this.missilePowerCount < 3) {
+            this.missilePower += 4;
+            this.missilePowerCount += 1;
         }
         
         if(this.missileSize == 1) {

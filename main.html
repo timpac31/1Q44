@@ -2,12 +2,19 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <style>
-        canvas { border: 1px solid #d3d3d3; background-color: #d8d8d8; }
-    </style>    
+    <link rel="stylesheet" href="main.css" />
     <script src="component.js"></script>
 </head>
-<body onload="gameStart()">
+<body onload="displaySelect()">
+    <div id="selectEl">
+        <div class="center"><p class="note">비행기 캐릭터를 선택하세요</p></div>
+        <div class="selectable-wrap">
+            <div class="selectable" data-speed="5" data-power="8" data-imgsrc="./img/spaceship.png"><p> A7<br>power: ★★★<br>speed: ★★★ </p></div>
+            <div class="selectable" data-speed="3" data-power="12" data-imgsrc="./img/spaceship.png"><p> K2<br>power: ★★★★<br>speed: ★★</p></div>
+            <div class="selectable" data-speed="7" data-power="4" data-imgsrc="./img/spaceship.png"><p> V3<br>power: ★★<br>speed: ★★★★</p></div>
+        </div>
+        <div class="center"><button id="gamestartBtn">Game Start</button></div>
+    </div>
 
 <script>
 const myAirplaneWidth = 36;
@@ -17,12 +24,13 @@ const fps = 50;
 const interval_frame = 1000 / fps;
 
 let myAirplane;
+let selectedPlane;
 const explosions = [];
 const items = {
     items: [],
 
     update: function() {
-        if(everyFrame(2500) && myAirplane.missilePower < 20) {
+        if(everyFrame(2500) && myAirplane.missilePowerSize < 3) {
             this.items.push(new Item(100, 20, zigzagMoving, 'P'));
         }
         if(everyFrame(3000) && myAirplane.missileSize < 3) {
@@ -94,9 +102,34 @@ const enemy = {
     }
 };
 
+function displaySelect() {
+    const selectEl = document.querySelector('#selectEl');
+    const selectables = document.querySelectorAll('.selectable');
+    const gamestartBtn = document.querySelector('#gamestartBtn');
+    
+    selectables.forEach(selectable => {
+        selectable.addEventListener('click', e => {
+            const target = (e.target.nodeName === 'P' ? e.target.parentElement : e.target);
+            selectables.forEach(s => s.classList.remove('selected'));
+            target.classList.add('selected');
+        });
+    });
+    gamestartBtn.addEventListener('click', () => {
+        selectedPlane = document.querySelector('.selected');        
+        if(selectedPlane == null) {
+            alert('비행기를 선택하세요');
+            return;
+        }
+        
+        selectEl.style.display = 'none';
+        gameStart();
+    });
+}
+
 function gameStart() {
-    gameController.listen();
-    myAirplane = new MyPlane(230, 650, myAirplaneWidth, myAirplaneHeight);
+    gameController.listen();    
+    myAirplane = new MyPlane(230, 650, myAirplaneWidth, myAirplaneHeight, 
+            Number(selectedPlane.dataset.speed), Number(selectedPlane.dataset.power), selectedPlane.dataset.imgsrc);
     initStage();
     gameArea.start();
 }
@@ -105,7 +138,8 @@ function gameRestart() {
     gameArea.clear();
     enemy.clear();
     items.clear();
-    myAirplane = new MyPlane(230, 650, myAirplaneWidth, myAirplaneHeight);
+    myAirplane = new MyPlane(230, 650, myAirplaneWidth, myAirplaneHeight, 
+            Number(selectedPlane.dataset.speed), Number(selectedPlane.dataset.power), selectedPlane.dataset.imgsrc);
     initStage();
     gameArea.stage = 1;
     gameArea.start();
@@ -128,7 +162,7 @@ function updateGameArea() {
     gameArea.frameNo += 1;
     gameArea.clear();
     gameArea.backgroundImg.update();
-    
+        
     myAirplane.update();
     if(checkMyPlaneCollisionWithMissile() || checkMyPlaneCollisionWithEnemy()) {
         gameArea.gameOver();
