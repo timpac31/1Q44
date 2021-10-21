@@ -9,9 +9,9 @@
     <div id="selectEl">
         <div class="center"><p class="note">비행기 캐릭터를 선택하세요</p></div>
         <div class="selectable-wrap">
-            <div class="selectable" data-speed="5" data-power="8" data-imgsrc="./img/spaceship.png"><p> A7<br>power: ★★★<br>speed: ★★★ </p></div>
-            <div class="selectable" data-speed="3" data-power="12" data-imgsrc="./img/spaceship.png"><p> K2<br>power: ★★★★<br>speed: ★★</p></div>
-            <div class="selectable" data-speed="7" data-power="4" data-imgsrc="./img/spaceship.png"><p> V3<br>power: ★★<br>speed: ★★★★</p></div>
+            <div class="selectable" data-speed="5" data-power="7" data-imgsrc="./img/purplebeat.png"><p> Purple Beat<br>power: ★★★<br>speed: ★★★ </p></div>
+            <div class="selectable" data-speed="4" data-power="10" data-imgsrc="./img/silvertron.png"><p> Silver Tron<br>power: ★★★★<br>speed: ★★</p></div>
+            <div class="selectable" data-speed="6" data-power="4" data-imgsrc="./img/blackhawk.png"><p> Black Hawk<br>power: ★★<br>speed: ★★★★</p></div>
         </div>
         <div class="center"><button id="gamestartBtn">Game Start</button></div>
     </div>
@@ -30,7 +30,7 @@ const items = {
     items: [],
 
     update: function() {
-        if(everyFrame(2500) && myAirplane.missilePowerSize < 3) {
+        if(everyFrame(2500) && myAirplane.missilePowerCount < 3) {
             this.items.push(new Item(100, 20, zigzagMoving, 'P'));
         }
         if(everyFrame(3000) && myAirplane.missileSize < 3) {
@@ -149,6 +149,8 @@ function nextStage() {
     gameArea.clear();
     enemy.clear();
     items.clear();
+    myAirplane = new MyPlane(230, 650, myAirplaneWidth, myAirplaneHeight, 
+            Number(selectedPlane.dataset.speed), Number(selectedPlane.dataset.power), selectedPlane.dataset.imgsrc);
     gameArea.stage += 1;
     gameArea.start();
 }

@@ -98,9 +98,7 @@ class MyPlane extends Piece {
 
     draw() {
         const ctx = gameArea.context;
-        ctx.drawImage(this.img, 359, 42, this.width, this.height,
-            this.x, this.y, this.width, this.height
-        );
+        ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
 
         this.drawMissiles();
     }
@@ -123,7 +121,7 @@ class MyPlane extends Piece {
         if(type === 'M' && this.missileSize < 3) {
             this.missileSize += 1;
         }else if(type === 'P' && this.missilePowerCount < 3) {
-            this.missilePower += 4;
+            this.missilePower += 2;
             this.missilePowerCount += 1;
         }
         
