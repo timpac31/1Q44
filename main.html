@@ -272,7 +272,7 @@ const gameController = {
         if(this.keys && this.keys[39] && myAirplane.x + myAirplaneWidth < gameArea.canvas.width) {
             myAirplane.moveRight();
         }
-        if(this.keys && this.keys[38] && myAirplane.y > 0) {
+        if(this.keys && this.keys[38] && myAirplane.y > 50) {
             myAirplane.moveUp();
         }
         if(this.keys && this.keys[40] && myAirplane.y + myAirplaneHeight < gameArea.canvas.height) {
@@ -346,6 +346,18 @@ function parallelMoving(piece) {
     piece.x += piece.speedX * piece.direction;
 }
 
+function parallelMovingCenter(piece) {
+    const center = gameArea.canvas.width;
+    if(piece.x > 400) {
+        piece.x = 400;
+        piece.direction = -piece.direction;
+    } else if(piece.x < 200) {
+        piece.x = 200;
+        piece.direction = -piece.direction;
+    }
+    piece.x += piece.speedX * piece.direction;
+}
+
 function zigzagMoving(piece) {
     parallelMoving(piece);
     piece.y += piece.speedY;
@@ -358,6 +370,17 @@ function downAndUp(piece) {
     piece.y += piece.speedY * piece.direction;
 }
 
+function downAndUpTop(piece) {
+    if(piece.y > 100 || piece.y < 1) {
+        piece.direction = -piece.direction;
+    }
+    piece.y += piece.speedY * piece.direction;
+}
+
+function notMoving(piece) {
+
+}
+   
 
 /*************************
  *    Missile strategy

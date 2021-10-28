@@ -8,7 +8,7 @@ function initStage() {
     const gameAreaWidth = gameArea.canvas.width;
     for(let frame=0; frame<9000;) {
         frame += rand(100, 200);
-        stage1[frame] = createEnemyWith(rand(50, gameAreaWidth), rand(40, 100), unit.getRandomUnit());        
+        stage1[frame] = createEnemyWith(rand(50, gameAreaWidth), rand(1, 100), unit.getRandomUnit());        
     }
 
     addAttackPattern1(stage1, 600);
@@ -25,7 +25,7 @@ function initStage() {
         }else {
             frame += rand(70, 150);
         }
-        stage2[frame] = createEnemyWith(rand(50, gameAreaWidth), rand(40, 100), unit.getRandomUnit());
+        stage2[frame] = createEnemyWith(rand(50, gameAreaWidth), rand(1, 100), unit.getRandomUnit());
     }
 
     addAttackPattern1(stage2, 600);
