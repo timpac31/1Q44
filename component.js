@@ -78,7 +78,7 @@ class Background extends Piece {
 }
 
 class MyPlane extends Piece {
-    constructor(x, y, width, height, speed, missilePower, imgSrc) {
+    constructor(x, y, width, height, speed, missilePower, imgSrc, life) {
         super(x, y, width, height, '#fff', null);        
         this.speedX = speed;
         this.speedY = speed;
@@ -89,6 +89,8 @@ class MyPlane extends Piece {
         this.missileFactory = () => { return [new BasicMissile(this.x + this.width/2, this.y)]; };
         this.img = new Image();
         this.img.src = imgSrc;
+        this.life = life;
+        this.bomb = 1;
     }
 
     update() {

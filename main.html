@@ -6,6 +6,12 @@
     <script src="component.js"></script>
 </head>
 <body onload="displaySelect()">
+    <div id="displayPanel">
+        <div>
+            <img src="./img/life.png">X<span id="lifeBox"></span> 
+            <img src="./img/bomb.png">X<span id="bombBox"></span>
+        </div>
+    </div>
     <div id="selectEl">
         <div class="center"><p class="note">비행기 캐릭터를 선택하세요</p></div>
         <div class="selectable-wrap">
@@ -129,7 +135,7 @@ function displaySelect() {
 function gameStart() {
     gameController.listen();    
     myAirplane = new MyPlane(230, 650, myAirplaneWidth, myAirplaneHeight, 
-            Number(selectedPlane.dataset.speed), Number(selectedPlane.dataset.power), selectedPlane.dataset.imgsrc);
+            Number(selectedPlane.dataset.speed), Number(selectedPlane.dataset.power), selectedPlane.dataset.imgsrc, 2);
     initStage();
     gameArea.start();
 }
@@ -139,7 +145,7 @@ function gameRestart() {
     enemy.clear();
     items.clear();
     myAirplane = new MyPlane(230, 650, myAirplaneWidth, myAirplaneHeight, 
-            Number(selectedPlane.dataset.speed), Number(selectedPlane.dataset.power), selectedPlane.dataset.imgsrc);
+            Number(selectedPlane.dataset.speed), Number(selectedPlane.dataset.power), selectedPlane.dataset.imgsrc, 2);
     initStage();
     gameArea.stage = 1;
     gameArea.start();
@@ -150,7 +156,7 @@ function nextStage() {
     enemy.clear();
     items.clear();
     myAirplane = new MyPlane(230, 650, myAirplaneWidth, myAirplaneHeight, 
-            Number(selectedPlane.dataset.speed), Number(selectedPlane.dataset.power), selectedPlane.dataset.imgsrc);
+            Number(selectedPlane.dataset.speed), Number(selectedPlane.dataset.power), selectedPlane.dataset.imgsrc, myAirplane.life);
     gameArea.stage += 1;
     gameArea.start();
 }
@@ -166,8 +172,13 @@ function updateGameArea() {
     gameArea.backgroundImg.update();
         
     myAirplane.update();
-    if(checkMyPlaneCollisionWithMissile() || checkMyPlaneCollisionWithEnemy()) {
-        gameArea.gameOver();
+    if(checkMyPlaneCollisionWithMissile() || checkMyPlaneCollisionWithEnemy()) {        
+        if(myAirplane.life > 0) {
+            myAirplane.life -= 1;
+            gameArea.resurrection();
+        } else {
+            gameArea.gameOver();
+        }        
     }
     
     enemy.update();
@@ -179,15 +190,22 @@ function updateGameArea() {
 
 const gameArea = {
     canvas: document.createElement("canvas"),
+    displayPanel: {        
+        panel: document.querySelector("#displayPanel"),
+        lifeBox: document.querySelector("#lifeBox"),
+        BombBox: document.querySelector("#bombBox")
+    },
     backgroundImg: new Background(0, 0, 550, 700, "./img/sky_back.png"),
     status: 'ready',
     stage: 1,
     start: function() {
         this.status = 'start';
         this.canvas.width = 550;
-        this.canvas.height = 700;        
+        this.canvas.height = 700;
         this.context = this.canvas.getContext("2d");
-        document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+        document.body.insertBefore(this.canvas, document.body.childNodes[2]);
+        this.displayPanel.lifeBox.textContent = myAirplane.life;
+        this.displayPanel.BombBox.textContent = myAirplane.bomb;
         this.frameNo = 0;
         this.loopStart();
     },
@@ -211,6 +229,11 @@ const gameArea = {
         this.status = 'gameOver';        
         this.displayMessage('Game Over', 160, 250, 48);
         this.displayMessage('Enter to restart', 200, 280, 20);
+    },
+    resurrection: function() {
+        this.displayPanel.lifeBox.textContent = myAirplane.life;
+        myAirplane = new MyPlane(230, 650, myAirplaneWidth, myAirplaneHeight, 
+            Number(selectedPlane.dataset.speed), Number(selectedPlane.dataset.power), selectedPlane.dataset.imgsrc, myAirplane.life);
     },
     clearStage: function() {
         this.stop();

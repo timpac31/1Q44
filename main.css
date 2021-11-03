@@ -1,5 +1,6 @@
 
 canvas { border: 1px solid #d3d3d3; background-color: #d8d8d8; }
+#displayPanel { position: absolute; left:10px; top:685px; font-weight:bold; font-size:11pt;}
 #selectEl { position: fixed; width:500px; height:360px; top:200px; left:100px; background-color:#eef2f5; border: 1px solid #ccc; }
 #selectEl .selectable-wrap { padding-left: 10px; }
 #selectEl .selectable { 
