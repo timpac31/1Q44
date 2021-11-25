@@ -60,7 +60,7 @@ const unit = {
         imgSrc: './img/G1.png', hp:90, attackInterval:100, speed: 1 
     },
     G2 : { 
-        width: 40, height: 4, type: 'normal', moving: downAndUpTop, missile: [bombMissile],
+        width: 40, height: 44, type: 'normal', moving: downAndUpTop, missile: [bombMissile],
         imgSrc: './img/G1.png', hp:90, attackInterval:100, speed: 1 
     },
     

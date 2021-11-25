@@ -14,10 +14,10 @@
     </div>
     <div id="selectEl">
         <div class="center"><p class="note">비행기 캐릭터를 선택하세요</p></div>
-        <div class="selectable-wrap">
-            <div class="selectable" data-speed="5" data-power="7" data-imgsrc="./img/purplebeat.png"><p> Purple Beat<br>power: ★★★<br>speed: ★★★ </p></div>
-            <div class="selectable" data-speed="4" data-power="10" data-imgsrc="./img/silvertron.png"><p> Silver Tron<br>power: ★★★★<br>speed: ★★</p></div>
-            <div class="selectable" data-speed="6" data-power="4" data-imgsrc="./img/blackhawk.png"><p> Black Hawk<br>power: ★★<br>speed: ★★★★</p></div>
+        <div class="selectable-wrap">            
+            <div class="selectable" data-name="ST" data-speed="4" data-power="10" data-imgsrc="./img/silvertron.png"><p> Silver Tron<br>power: ★★★★<br>speed: ★★</p></div>
+            <div class="selectable" data-name="PB" data-speed="5" data-power="7" data-imgsrc="./img/purplebeat.png"><p> Purple Beat<br>power: ★★★<br>speed: ★★★ </p></div>
+            <div class="selectable" data-name="BH" data-speed="6" data-power="4" data-imgsrc="./img/blackhawk.png"><p> Black Hawk<br>power: ★★<br>speed: ★★★★</p></div>
         </div>
         <div class="center"><button id="gamestartBtn">Game Start</button></div>
     </div>
@@ -102,6 +102,24 @@ const enemy = {
             }
         }
     },
+    removeMissilesNearbyMyPlane: function(x, y) {
+        const minX = x - 100;
+        const maxX = x + 100;
+        const minY = y - 100;
+        const maxY = y + 100;
+        for(let i=0; i<this.missiles.length; i++) {
+            if(this.missiles[i].x > minX && this.missiles[i].x < maxX && this.missiles[i].y > minY && this.missiles[i].y < maxY) {
+                this.missiles.splice(i, 1);
+            }
+        }
+    },
+    removeMissilesBottom: function() {
+        for(let i=0; i<this.missiles.length; i++) {
+            if(this.missiles[i].y > 300) {
+                this.missiles.splice(i, 1);
+            }
+        }
+    },
     clear: function() {
         this.planes = [];
         this.missiles = [];
@@ -112,6 +130,7 @@ function displaySelect() {
     const selectEl = document.querySelector('#selectEl');
     const selectables = document.querySelectorAll('.selectable');
     const gamestartBtn = document.querySelector('#gamestartBtn');
+    const displayPanel = document.querySelector('#displayPanel');
     
     selectables.forEach(selectable => {
         selectable.addEventListener('click', e => {
@@ -128,13 +147,14 @@ function displaySelect() {
         }
         
         selectEl.style.display = 'none';
+        displayPanel.style.display = 'block';
         gameStart();
     });
 }
 
 function gameStart() {
     gameController.listen();    
-    myAirplane = new MyPlane(230, 650, myAirplaneWidth, myAirplaneHeight, 
+    myAirplane = new MyPlane(230, 650, myAirplaneWidth, myAirplaneHeight, selectedPlane.dataset.name,
             Number(selectedPlane.dataset.speed), Number(selectedPlane.dataset.power), selectedPlane.dataset.imgsrc, 2);
     initStage();
     gameArea.start();
@@ -144,7 +164,7 @@ function gameRestart() {
     gameArea.clear();
     enemy.clear();
     items.clear();
-    myAirplane = new MyPlane(230, 650, myAirplaneWidth, myAirplaneHeight, 
+    myAirplane = new MyPlane(230, 650, myAirplaneWidth, myAirplaneHeight, selectedPlane.dataset.name,
             Number(selectedPlane.dataset.speed), Number(selectedPlane.dataset.power), selectedPlane.dataset.imgsrc, 2);
     initStage();
     gameArea.stage = 1;
@@ -155,8 +175,10 @@ function nextStage() {
     gameArea.clear();
     enemy.clear();
     items.clear();
-    myAirplane = new MyPlane(230, 650, myAirplaneWidth, myAirplaneHeight, 
+    const bombCnt = myAirplane.bomb;
+    myAirplane = new MyPlane(230, 650, myAirplaneWidth, myAirplaneHeight, selectedPlane.dataset.name,
             Number(selectedPlane.dataset.speed), Number(selectedPlane.dataset.power), selectedPlane.dataset.imgsrc, myAirplane.life);
+    myAirplane.bomb = bombCnt;
     gameArea.stage += 1;
     gameArea.start();
 }
@@ -176,6 +198,7 @@ function updateGameArea() {
         if(myAirplane.life > 0) {
             myAirplane.life -= 1;
             gameArea.resurrection();
+            enemy.removeMissilesBottom();
         } else {
             gameArea.gameOver();
         }        
@@ -193,7 +216,7 @@ const gameArea = {
     displayPanel: {        
         panel: document.querySelector("#displayPanel"),
         lifeBox: document.querySelector("#lifeBox"),
-        BombBox: document.querySelector("#bombBox")
+        bombBox: document.querySelector("#bombBox")
     },
     backgroundImg: new Background(0, 0, 550, 700, "./img/sky_back.png"),
     status: 'ready',
@@ -205,7 +228,7 @@ const gameArea = {
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[2]);
         this.displayPanel.lifeBox.textContent = myAirplane.life;
-        this.displayPanel.BombBox.textContent = myAirplane.bomb;
+        this.displayPanel.bombBox.textContent = myAirplane.bomb;
         this.frameNo = 0;
         this.loopStart();
     },
@@ -232,7 +255,8 @@ const gameArea = {
     },
     resurrection: function() {
         this.displayPanel.lifeBox.textContent = myAirplane.life;
-        myAirplane = new MyPlane(230, 650, myAirplaneWidth, myAirplaneHeight, 
+
+        myAirplane = new MyPlane(230, 650, myAirplaneWidth, myAirplaneHeight, selectedPlane.dataset.name,
             Number(selectedPlane.dataset.speed), Number(selectedPlane.dataset.power), selectedPlane.dataset.imgsrc, myAirplane.life);
     },
     clearStage: function() {
@@ -301,8 +325,9 @@ const gameController = {
         if(this.keys && this.keys[40] && myAirplane.y + myAirplaneHeight < gameArea.canvas.height) {
             myAirplane.moveDown();
         }
-        if(this.shotKey && this.shotKey == 90) {
-            myAirplane.shotMissile();
+        if(this.shotKey) {
+            if(this.shotKey == 90) myAirplane.shotMissile();
+            else if(this.shotKey == 88) myAirplane.shotBomb();
         }
     }
 }
@@ -337,10 +362,19 @@ function leftUp(piece) {
     piece.y -= piece.speedY;
     piece.x -= 2;
 }
+function leftLeftUp(piece) {
+    piece.y -= piece.speedY;
+    piece.x -= 4;
+}
 
 function rightUp(piece) {
     piece.y -= piece.speedY;
     piece.x += 2;
+}
+
+function rightRightUp(piece) {
+    piece.y -= piece.speedY;
+    piece.x += 4;
 }
 
 function directDown(piece) {
@@ -458,6 +492,87 @@ function targeting(x, y) {
         piece.y += piece.speedY;    
     }, 4);
 }
+
+function boom(limitInterval, frame, updateFn) {
+    if(myAirplane.bomb < 1) return;
+
+    enemy.removeMissilesNearbyMyPlane(myAirplane.x, myAirplane.y);
+    myAirplane.bomb--;
+    gameArea.displayPanel.bombBox.textContent = myAirplane.bomb;
+
+    
+    
+    let counter = 0;
+    let loop = setInterval(() => {
+        counter++;
+        if (counter > limitInterval) clearInterval(loop);
+        
+        updateFn();
+
+    }, frame);
+}
+
+function bombUpdate1() {
+    const ctx = gameArea.context;
+    this.x = myAirplane.x;
+    this.y = myAirplane.y;
+    ctx.fillStyle = '#c97b07';
+    ctx.fillRect(x, y, 40, -700);
+    
+    for(let i=0; i<enemy.missiles.length; i++) {
+        if(enemy.missiles[i].y < y && enemy.missiles[i].x > x && enemy.missiles[i].x < x+40) {
+            enemy.missiles.splice(i, 1);
+        }
+    }
+
+    for(let i=0; i<enemy.planes.length; i++) {
+        if(checkBoundaryCrash({x:this.x, y:this.y-700, whith:40, height:700}, enemy.planes[i])) {                
+            enemy.planes[i].takeDamage(3);
+            if(enemy.planes[i].hp <= 0) {
+                enemy.planes[i].destroy();
+                enemy.planes.splice(i, 1);
+            }
+        }
+    }
+}
+
+function bombUpdate2() {
+    this.x = myAirplane.x;
+    this.y = myAirplane.y;
+    myAirplane.missiles.push(new Missile(x + 8, y, 5, 5, 'blue', leftUp, 0.1, 7));
+    myAirplane.missiles.push(new Missile(x + 18, y, 5, 5, 'blue', directUp, 0.1, 7));
+    myAirplane.missiles.push(new Missile(x + 28, y, 5, 5, 'blue', rightUp, 0.1, 7));
+}
+
+function bombUpdate3() {
+    const ctx = gameArea.context;
+    this.x = myAirplane.x;
+    this.y = myAirplane.y;        
+    ctx.beginPath();
+    ctx.fillStyle = '#dfd3cf';
+    ctx.arc(x+18, y+18, 160, 0, 2 * Math.PI);
+    ctx.fill();
+    
+    for(let i=0; i<enemy.missiles.length; i++) {
+        const distance = calcDistance(x, y, enemy.missiles[i].x, enemy.missiles[i].y);
+        if(distance <= 160 + enemy.missiles[i].radius) {
+            enemy.missiles.splice(i, 1);
+        }
+    }
+
+    for(let i=0; i<enemy.planes.length; i++) {
+        const radius = enemy.planes[i].width /2;
+        const distance = calcDistance(x, y, enemy.planes[i].x + radius, enemy.planes[i].y + radius);
+        if(distance <= 160 + radius) {
+            enemy.planes[i].takeDamage(1);
+            if(enemy.planes[i].hp <= 0) {
+                enemy.planes[i].destroy();
+                enemy.planes.splice(i, 1);
+            }
+        }
+    }
+}
+
 
 /*************************
  *   Util function

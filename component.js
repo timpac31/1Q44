@@ -78,8 +78,9 @@ class Background extends Piece {
 }
 
 class MyPlane extends Piece {
-    constructor(x, y, width, height, speed, missilePower, imgSrc, life) {
+    constructor(x, y, width, height, name, speed, missilePower, imgSrc, life) {
         super(x, y, width, height, '#fff', null);        
+        this.name = name;
         this.speedX = speed;
         this.speedY = speed;
         this.missiles = [];
@@ -90,7 +91,7 @@ class MyPlane extends Piece {
         this.img = new Image();
         this.img.src = imgSrc;
         this.life = life;
-        this.bomb = 1;
+        this.bomb = 2;
     }
 
     update() {
@@ -119,12 +120,36 @@ class MyPlane extends Piece {
         this.missileFactory().forEach(m => this.missiles.push(m));
     }
 
+    shotBomb() {
+        let limitInterval;
+        let interval;
+        let bombUpdateFn;
+        
+        if(this.name === 'ST') {
+            limitInterval = 400;
+            interval = 30;
+            bombUpdateFn = bombUpdate1
+        }else if(this.name === 'PB') {
+            limitInterval = 200;
+            interval = 70;
+            bombUpdateFn = bombUpdate2
+        }else if(this.name === 'BH') {
+            limitInterval = 450;
+            interval = 30;
+            bombUpdateFn = bombUpdate3
+        }
+
+        boom(limitInterval, interval, bombUpdateFn);
+    }
+
     itemUpdate(type) {
         if(type === 'M' && this.missileSize < 3) {
             this.missileSize += 1;
         }else if(type === 'P' && this.missilePowerCount < 3) {
             this.missilePower += 2;
             this.missilePowerCount += 1;
+        }else if(type === 'B' && this.bomb < 3) {
+            this.bomb += 1;
         }
         
         if(this.missileSize == 1) {

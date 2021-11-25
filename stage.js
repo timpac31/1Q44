@@ -14,9 +14,9 @@ function initStage() {
     addAttackPattern1(stage1, 600);
     addAttackPattern1(stage1, 3000);
     addAttackPattern1(stage1, 7000);
-    stage1[9200] = createEnemyWith(50, 10, unit.VVS);
-    stage1[9201] = createEnemyWith(150, 30, unit.VVS_ARM);
-    stage1[9202] = createEnemyWith(250, 30, unit.VVS_SC);
+    stage1[200] = createEnemyWith(50, 10, unit.VVS);
+    stage1[201] = createEnemyWith(150, 30, unit.VVS_ARM);
+    stage1[202] = createEnemyWith(250, 30, unit.VVS_SC);
 
 
     for(let frame=0; frame<10000;) {
