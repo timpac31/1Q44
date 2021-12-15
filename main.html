@@ -13,7 +13,7 @@
         </div>
     </div>
     <div id="selectEl">
-        <div class="center"><p class="note">비행기 캐릭터를 선택하세요</p></div>
+        <div class="center"><p class="note">캐릭터를 선택하세요</p></div>
         <div class="selectable-wrap">            
             <div class="selectable" data-name="ST" data-speed="4" data-power="10" data-imgsrc="./img/silvertron.png"><p> Silver Tron<br>power: ★★★★<br>speed: ★★</p></div>
             <div class="selectable" data-name="PB" data-speed="5" data-power="7" data-imgsrc="./img/purplebeat.png"><p> Purple Beat<br>power: ★★★<br>speed: ★★★ </p></div>
@@ -40,7 +40,10 @@ const items = {
             this.items.push(new Item(100, 20, zigzagMoving, 'P'));
         }
         if(everyFrame(3000) && myAirplane.missileSize < 3) {
-            this.items.push(new Item(100, 20, zigzagMoving, 'M'));
+            this.items.push(new Item(50, 20, zigzagMoving, 'M'));
+        }
+        if(everyFrame(7000) && myAirplane.bomb < 3) {
+            this.items.push(new Item(100, 20, zigzagMoving, 'B'));
         }
         this.removeIfoutOfCanvasOrCollision();
         this.items.forEach(item => item.update());
@@ -103,10 +106,10 @@ const enemy = {
         }
     },
     removeMissilesNearbyMyPlane: function(x, y) {
-        const minX = x - 100;
-        const maxX = x + 100;
-        const minY = y - 100;
-        const maxY = y + 100;
+        const minX = x - 200;
+        const maxX = x + 200;
+        const minY = y - 200;
+        const maxY = y + 200;
         for(let i=0; i<this.missiles.length; i++) {
             if(this.missiles[i].x > minX && this.missiles[i].x < maxX && this.missiles[i].y > minY && this.missiles[i].y < maxY) {
                 this.missiles.splice(i, 1);
@@ -115,7 +118,7 @@ const enemy = {
     },
     removeMissilesBottom: function() {
         for(let i=0; i<this.missiles.length; i++) {
-            if(this.missiles[i].y > 300) {
+            if(this.missiles[i].y > 200) {
                 this.missiles.splice(i, 1);
             }
         }
@@ -197,8 +200,17 @@ function updateGameArea() {
     if(checkMyPlaneCollisionWithMissile() || checkMyPlaneCollisionWithEnemy()) {        
         if(myAirplane.life > 0) {
             myAirplane.life -= 1;
+
+            if(myAirplane.missilePowerCount > 1) {
+                items.items.push(new Item(myAirplane.x-50, myAirplane.y-200, zigzagMoving, 'P'));
+            }
+            if(myAirplane.missileSize > 1) {
+                items.items.push(new Item(myAirplane.x+50, myAirplane.y-200, zigzagMoving, 'M'));
+            }
+
             gameArea.resurrection();
-            enemy.removeMissilesBottom();
+            //enemy.removeMissilesBottom();
+            enemy.missiles = [];            
         } else {
             gameArea.gameOver();
         }        

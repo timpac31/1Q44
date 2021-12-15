@@ -94,8 +94,13 @@ const unit = {
 
     DOUBLE_DRAGON : {
         width: 150, height: 80, color: 'black', type: 'king', 
-        moving: parallelMoving, missile: [leftDown, basicEnemyMissile, rightDown, fastMissile],
-        imgSrc: './img/T1.png', hp: 5000, attackInterval: 40, speed: 7
+        moving: parallelMoving, missile: [leftDown, basicEnemyMissile, rightDown, fastMissile, targeting],
+        imgSrc: './img/T1.png', hp: 6000, attackInterval: 40, speed: 7
+    },
+    DOUBLE_DRAGON_CLONE : {
+        width: 150, height: 80, color: 'black', type: 'king', 
+        moving: parallelMoving, missile: [leftDown, basicEnemyMissile, rightDown, fastMissile, targeting],
+        imgSrc: './img/T1.png', hp: 3000, attackInterval: 40, speed: 7
     },
 
     getRandomUnit: function() {

@@ -126,15 +126,15 @@ class MyPlane extends Piece {
         let bombUpdateFn;
         
         if(this.name === 'ST') {
-            limitInterval = 400;
+            limitInterval = 300;
             interval = 30;
             bombUpdateFn = bombUpdate1
         }else if(this.name === 'PB') {
-            limitInterval = 200;
-            interval = 70;
+            limitInterval = 150;
+            interval = 80;
             bombUpdateFn = bombUpdate2
         }else if(this.name === 'BH') {
-            limitInterval = 450;
+            limitInterval = 400;
             interval = 30;
             bombUpdateFn = bombUpdate3
         }
@@ -304,7 +304,7 @@ class Item extends CirclePiece {
         ctx.fill();
         ctx.fillStyle = "#ffffff";
         ctx.font = 'bold 18px _sans';
-        ctx.fillText(this.type, this.x-5, this.y+6);
+        ctx.fillText(this.type, this.x-6, this.y+6);
     }
 }
 
