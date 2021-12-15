@@ -4,13 +4,16 @@
  ![screenshot](./img/game_screenshot.jpg)
 
 ## PLAY GAME
-https://timpac31.github.io/static/1q44/main.html
+<a href="https://timpac31.github.io/static/1q44/main.html" target="_blank">게임하러가기! Go to play game</a>
 
 ## 조작 방법
  - 방향키 : 이동
  - z : 미사일 발사
  - x : 폭탄
  - enter : 선택
+
+## TODO
+현재 Stage 3까지만 구현함..
 
 ## Licence
 MIT License
