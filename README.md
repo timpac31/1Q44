@@ -1,6 +1,7 @@
 ## 1Q44
  - Javascript, HTML canvas로 구현한 비행기 슈팅 게임
- ![screenshot](./img/game-screenshot.jpg)
+ 
+ ![screenshot](./img/game_screenshot.jpg)
 
 ## PLAY GAME
 https://timpac31.github.io/static/1q44/main.html
