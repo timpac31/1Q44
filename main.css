@@ -19,3 +19,5 @@ button#gamestartBtn {padding: 15px 80px; background-color: #7b76f1; color: #fff;
 
 p.note { color: #555; font-size: 18pt; }
 .center { text-align: center;}
+
+.guide {position: absolute; top: 20px; left: 650px; border: 1px solid; padding: 15px; background: #607d8b; color: #fff;}
