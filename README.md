@@ -4,7 +4,7 @@
  ![screenshot](./img/game_screenshot.jpg)
 
 ## PLAY GAME
-<a href="https://timpac31.github.io/static/1q44/main.html" target="_blank">게임하러가기! Go to play game</a>
+<a href="https://timpac31.github.io/page/1q44/main.html" target="_blank">게임하러가기! Go to play game</a>
 
 ## 조작 방법
  - 방향키 : 이동
